@@ -1,11 +1,11 @@
 # Takes screenshots without pywin32 dependency (whole screen/single window)
 
 ```python
-pip install ctypes-screenshot
+pip install ctypes-screenshots
 ```
 
 ```python
-from ctypes_screenshot import screencapture_window, list_windows, screencapture
+from ctypes_screenshots import screencapture_window, list_windows, screencapture
 
 import cv2
 import time
