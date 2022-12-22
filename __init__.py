@@ -35,7 +35,10 @@ def check_zero(result, func, args):
 if not hasattr(wintypes, "LPDWORD"):  # PY2
     wintypes.LPDWORD = ctypes.POINTER(wintypes.DWORD)
 
-WindowInfo = namedtuple("WindowInfo", "pid title hwnd length")
+WindowInfo = namedtuple("WindowInfo", "pid title hwnd length tid status")
+
+
+
 
 def list_windows():
     """Return a sorted list of visible windows."""
@@ -43,13 +46,16 @@ def list_windows():
 
     @WNDENUMPROC
     def enum_proc(hWnd, lParam):
+        status = 'invisible'
         if user32.IsWindowVisible(hWnd):
-            pid = wintypes.DWORD()
-            tid = user32.GetWindowThreadProcessId(hWnd, ctypes.byref(pid))
-            length = user32.GetWindowTextLengthW(hWnd) + 1
-            title = ctypes.create_unicode_buffer(length)
-            user32.GetWindowTextW(hWnd, title, length)
-            result.append((WindowInfo(pid.value, title.value, hWnd, length)))
+            status = 'visible'
+
+        pid = wintypes.DWORD()
+        tid = user32.GetWindowThreadProcessId(hWnd, ctypes.byref(pid))
+        length = user32.GetWindowTextLengthW(hWnd) + 1
+        title = ctypes.create_unicode_buffer(length)
+        user32.GetWindowTextW(hWnd, title, length)
+        result.append((WindowInfo(pid.value, title.value, hWnd, length, tid, status)))
         return True
 
     user32.EnumWindows(enum_proc, 0)
